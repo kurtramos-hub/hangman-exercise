@@ -1,23 +1,35 @@
 import promp from "./promp.js";
 import data from "./data.js";
 
-/* Get one random word from data */
-const word = data[Math.floor(Math.random() * data.length)];
+const wordObj = data[Math.floor(Math.random() * data.length)];
+const correctWord = wordObj.word.toLowerCase();
+const maxTries = 7;
+const hangmanSteps = ["H", "HA", "HAN", "HANG", "HANGM", "HANGMA", "HANGMAN"];
 
-async function runGame () {
-    const answer =  await promp(`${word.question} `);
+let incorrectGuesses = 0;
 
-    if (answer.toLowerCase() !== word.word) {
+async function runGame() {
+  const guess = await promp(`${wordObj.question} `);
 
-    } else {
-        console.log("Congratulations! You've guessed the word correctly.");
-        return;
+  if (guess.toLowerCase() === correctWord) {
+    console.log("Congratulations! You've guessed the word correctly.");
+    return;
+  } else {
+    // Wrong guess
+    console.log(hangmanSteps[incorrectGuesses] || "HANGMAN");
+    incorrectGuesses++;
+
+    if (incorrectGuesses === maxTries - 1) {
+      console.log(`Hint: ${wordObj.hint}`);
     }
 
+    if (incorrectGuesses >= maxTries) {
+      console.log(`Game over! The word was: ${correctWord}`);
+      return;
+    }
 
     return runGame();
+  }
 }
-
-
 
 runGame();
